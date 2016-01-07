@@ -1,5 +1,5 @@
 'use strict';
-var Booky = ( function () {
+var Booky = Booky || ( function () {
 
   function flatten( thing ) {
     var flattened = '';
@@ -39,7 +39,9 @@ var Booky = ( function () {
       var flat = [];
       for ( var l = 0; l < url.parameters.length; l++ ) {
         for ( var key in url.parameters[l] ) {
-          flat.push( key + '=' + flatten( url.parameters[l][key] ) );
+          if ( url.parameters[l].hasOwnProperty( key ) ) {
+            flat.push( key + '=' + flatten( url.parameters[l][key] ) );
+          }
         }
       }
       location += flat.join( '&' );
@@ -48,6 +50,27 @@ var Booky = ( function () {
     if ( url.anchor ) location += ( '#' + flatten( url.anchor ) );
 
     action( location );
+  }
+
+  function Mailto( recipients, parameters ) {
+    if ( recipients && recipients.length > 0 ) recipients[0] = 'mailto:' + recipients[0];
+    if ( !parameters ) parameters = [];
+
+    return {
+      'base' : recipients,
+      'parameters' : parameters,
+      'anchor' : null
+    };
+  }
+
+  function HttpGet( baseUrl, parameters, anchor ) {
+    if ( !parameters ) parameters = [];
+
+    return {
+      'base' : baseUrl,
+      'parameters' : parameters,
+      'anchor' : anchor
+    };
   }
 
   function author() {
@@ -79,6 +102,9 @@ var Booky = ( function () {
 
   return {
     'get' : get,
+    'Mailto' : Mailto,
+    'HttpGet' : HttpGet,
+
     'author' : author,
     'lastModified' : lastModified,
     'selectedText' : selectedText,
