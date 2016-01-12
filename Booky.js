@@ -35,10 +35,9 @@ var Booky = Booky || ( function () {
     /**
      * Gets a mailto or http get protocol bookmarklet.
      * @param {HttpGet|Mailto} url - object representing the location action to get
-     * @param {calback} [action] - optional callback handling url string (defaults to load in current browser window)
+     * @returns {object}
      */
-    function get( url, action ) {
-        action = action || function ( loc ) { window.location.href = loc; };
+    function get( url ) {
         var location = '';
 
         // Concatenate the url base
@@ -70,7 +69,10 @@ var Booky = Booky || ( function () {
         if ( url.anchor ) location += ( '#' + flatten( url.anchor ) );
 
         // Do what's specified with that url location
-        action( location );
+        return {
+            'inThisWindow': inThisWindow( location ),
+            'inNewWindow': inNewWindow( location )
+        };
     }
 
     /**
@@ -80,16 +82,19 @@ var Booky = Booky || ( function () {
      * @param {string} anchor - string of anchor HTML node (*NOTE omit # symbol, it is automatically prepended)
      * @returns {object}
      */
-    function HttpGet( baseUrl, parameters, anchor ) {
+    function webpage( baseUrl, parameters, anchor ) {
         if ( wtf.STRING( baseUrl ) ) baseUrl = [].push( baseUrl );
         if ( !parameters ) parameters = [];
         if ( !anchor ) anchor = '';
 
-        return {
-            'base' : baseUrl,
-            'parameters' : parameters,
-            'anchor' : anchor
-        };
+        // Return an object with a populated get method
+        return { 'get': function () { get(
+            {
+                'base' : baseUrl,
+                'parameters' : parameters,
+                'anchor' : anchor
+            }
+        ); }
     }
 
     /**
@@ -98,13 +103,29 @@ var Booky = Booky || ( function () {
      * @param {object[]} parameters - array of key = value pairs, values may be numbers, strings, functions or arrays of the same
      * @returns {object}
      */
-    function Mailto( to, parameters ) {
+    function email( to, parameters ) {
         // Scrub arguments into a arrays, and prepend mailto protocol
         if ( wtf.STRING( to ) ) to = [].push( to );
         to[0] = 'mailto:' + to[0];
         if ( !parameters ) parameters = [];
 
-        return HttpGet( to, parameters );
+        return webpage( to, parameters );
+    }
+
+    /**
+     * Opens a URL in the current window.
+     * @param {string} url - the URL to open
+     */
+    function inSameWindow( url ) {
+        return function () { window.location.href = url; };
+    }
+
+    /**
+     * Opens a URL in a new window.
+     * @param {string} url - the URL to open
+     */
+    function inNewWindow( url ) {
+        return function () { window.open( url, 'newBookyWindow' ); };
     }
 
     /**
@@ -155,9 +176,8 @@ var Booky = Booky || ( function () {
     function url() { return document.URL; }
 
     return {
-        'get' : get,
-        'Mailto' : Mailto,
-        'HttpGet' : HttpGet,
+        'mailto' : mailto,
+        'webpage' : webpage,
 
         'author' : author,
         'lastModified' : lastModified,
