@@ -9,27 +9,38 @@ var Booky = Booky || ( function () {
     /**
      * Flattens an nth-dimensional array of primitives, functions, and/or arrays
      * of the same into a concatenated string value.
-     * @param {number|string|[]|function} thing - the entry point to recursively flatten
+     * @param {number|string|[]|function} thing - the entry point to flatten
      * @returns {string}
      */
     function flatten( thing ) {
-    var flattened = '';
+        var flattened = '';
 
-    switch ( wtf.type( thing ) ) {
-        case wtf.NUMBER() : // Fall through to STRING case.
-        case wtf.STRING() : // Base case.
-            flattened += thing;
-            break;
-        case wtf.FUNCTION() : // Recurse on value returned.
-            flattened += flatten( thing() );
-            break;
-        case wtf.ARRAY() : // Concatenate recursed value of each element in the array.
-            for ( var t = 0; t < thing.length; t++ ) flattened += flatten( thing[t] );
-            break;
-        default : break; // Do nothing. Non-primitives will be ignored -- including objects.
+        switch ( wtf.type( thing ) ) {
+            case wtf.NUMBER() : // Fall through to STRING case.
+            case wtf.STRING() : // Base case.
+                flattened += thing;
+                break;
+            case wtf.FUNCTION() : // Recurse on value returned.
+                flattened += flatten( thing() );
+                break;
+            case wtf.ARRAY() : // Concatenate recursed value of each element.
+                for ( var t = 0; t < thing.length; t++ ) flattened += flatten( thing[t] );
+                break;
+            default : break; // Do nothing. Non-primitives and objects ignored.
+        }
+
+        return flattened;
     }
 
-    return flattened;
+    /**
+     * Encodes URI components to RFC 3986 standard.
+     * @param {string} str - the URI component to encode
+     * @returns {string}
+     */
+    function encodeURIComponent_RFC3986( str ) {
+        return encodeURIComponent( str ).replace( /[!'()*]/g, function( c ) {
+            return '%' + c.charCodeAt( 0 ).toString( 16 );
+        } );
     }
 
     /**
@@ -68,9 +79,11 @@ var Booky = Booky || ( function () {
         // Concatenate the anchor / hash
         if ( url.anchor ) location += ( '#' + flatten( url.anchor ) );
 
+        location = encodeURIComponent_RFC3986( location );
+
         // Do what's specified with that url location
         return {
-            'inThisWindow': inThisWindow( location ),
+            'inSameWindow': inSameWindow( location ),
             'inNewWindow': inNewWindow( location )
         };
     }
@@ -78,8 +91,10 @@ var Booky = Booky || ( function () {
     /**
      * Constructs an object representing the fields of an URL/URI
      * @param {string|string[]} baseUrl - array of recipient email address
-     * @param {object[]} parameters - array of key = value pairs, values may be numbers, strings, functions or arrays of the same
-     * @param {string} anchor - string of anchor HTML node (*NOTE omit # symbol, it is automatically prepended)
+     * @param {object[]} parameters - array of key = value pairs, values may be
+     * numbers, strings, functions or arrays of the same
+     * @param {string} anchor - string of anchor HTML node
+     * (NOTE: omit "#" symbol, it is automatically prepended)
      * @returns {object}
      */
     function webpage( baseUrl, parameters, anchor ) {
@@ -94,13 +109,14 @@ var Booky = Booky || ( function () {
                 'parameters' : parameters,
                 'anchor' : anchor
             }
-        ); }
+        ); } };
     }
 
     /**
      * Constructs an object representing the fields of a 'mailto:'
      * @param {string|string[]} to - array of recipient email address
-     * @param {object[]} parameters - array of key = value pairs, values may be numbers, strings, functions or arrays of the same
+     * @param {object[]} parameters - array of key = value pairs, values may be
+     * numbers, strings, functions or arrays of the same
      * @returns {object}
      */
     function email( to, parameters ) {
@@ -154,10 +170,7 @@ var Booky = Booky || ( function () {
         var text = '';
         if ( window.getSelection ) {
             text = window.getSelection().toString();
-        } else if (
-            document.selection
-            && document.selection.type != 'Control'
-        ) {
+        } else if ( document.selection && document.selection.type != 'Control' ) {
             text = document.selection.createRange().text;
         }
         return text;

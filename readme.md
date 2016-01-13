@@ -1,7 +1,7 @@
 #### "Booky.js" a customizable bookmarklet module
 Combine canned functions to easily generate custom JavaScript bookmarklets.
 
-###### Automatically searches for a highlighted term on a page:
+###### Automatically search for a highlighted term on a page:
 ```
 Booky.webpage(
         'http://www.google.com/search',
@@ -13,7 +13,7 @@ Booky.webpage(
 ```
 
 
-###### Generates a boilerplate email to share interesting excerpts:
+###### Generate a boilerplate email to share excerpts from online articles:
 ```
 Booky.email(
         [ 'potus@us.gov', 'flotus@us.gov' ],
@@ -40,6 +40,5 @@ Booky.email(
         ]
     )
     .get()
-    .inThisWindow();
-
+    .inSameWindow();
 ```
