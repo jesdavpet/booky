@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    <title>"Booky.js" tests</title>
+    <meta name="author" content="Jesse Peterson [@jesdavpet]" />
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.20.0.css" />
+    </head>
+
+    <body>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+
+        <script src="http://code.jquery.com/qunit/qunit-1.20.0.js"></script>
+        <script type="text/javascript" src="Booky.js"></script>
+        <script type="text/javascript">
+        /******************************************************************************/
+
+        QUnit.module( 'Tests \"Booky\" object:' );
+        QUnit.test( 'testing if \"Booky\" object exists in scope...', function( assert ) {
+            assert.ok( Booky, '\"Booky\" object exists in global scope' );
+        } );
+
+        /******************************************************************************/
+
+        QUnit.module( 'Tests Booky document info retreival functions:' );
+        QUnit.test( 'testing author() function evaluates correctly...', function( assert ) {
+            assert.notEqual( Booky.author(), '', 'Document author not empty' );
+            assert.equal( Booky.author(), 'Jesse Peterson [@jesdavpet]', 'Document author correctly returned' );
+        } );
+        QUnit.test( 'testing lastModified() function evaluates correctly...', function( assert ) {
+            assert.notEqual( Booky.lastModified(), '', 'Document last modified not empty' );
+        } );
+        QUnit.test( 'testing title() function evaluates correctly...', function( assert ) {
+            assert.notEqual( Booky.title(), '', 'Document title not empty' );
+            assert.equal( Booky.title(), '\"Booky.js\" tests', 'Document title correctly returned' );
+        } );
+        QUnit.test( 'testing url() function evaluates correctly...', function( assert ) {
+            assert.notEqual( Booky.url(), '', 'Document URL not empty' );
+            assert.equal( Booky.url(), document.URL, 'Document URL correctly returned' );
+        } );
+
+        /******************************************************************************/
+
+        QUnit.module( 'TODO: Write tests for script configuration and execution call...' );
+
+        /******************************************************************************/
+        </script>
+    </body>
+</html>

@@ -189,7 +189,7 @@ var Booky = Booky || ( function () {
     function url() { return document.URL; }
 
     return {
-        'mailto' : mailto,
+        'email' : email,
         'webpage' : webpage,
 
         'author' : author,
@@ -199,3 +199,5 @@ var Booky = Booky || ( function () {
         'url' : url
     };
 } )();
+
+var wtf=wtf||function(t){"use strict";function n(t){return Object.prototype.toString.call(t)}function r(t,r){var e=n(r);o[t]=function(t){return 0===arguments.length?e:n(t)===e}}var o={type:n,add:r};t=t||{};for(var e in t)t.hasOwnProperty(e)&&o.add(e,t[e]);return o}({ARRAY:[],ERROR:new Error,FUNCTION:function(){},NULL:null,NUMBER:42,OBJECT:{},STRING:"A string.",UNDEFINED:void 0});
