@@ -1,0 +1,38 @@
+{
+  "name": "@jesdavpet/booky",
+  "version": "1.0.0",
+  "description": "Fluent interface for making custom bookmarklets.",
+  "main": "src/booky.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npm run test-unit",
+    "test-unit": "mocha test/**.test.js",
+    "test-unit-watch": "mocha test/**.test.js -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesdavpet/booky.git"
+  },
+  "keywords": [
+    "bookmarklet",
+    "browser",
+    "extension",
+    "email",
+    "mailto"
+  ],
+  "author": "Jesse David Peterson <@jesdavpet> (http://www.jes.dav.pet)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jesdavpet/booky/issues"
+  },
+  "homepage": "https://github.com/jesdavpet/booky#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "@jesdavpet/wtf": "^1.1.0"
+  }
+}
