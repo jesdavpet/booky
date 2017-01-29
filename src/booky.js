@@ -8,7 +8,7 @@ module.exports = (function booky () {
   var wtf = require('@jesdavpet/wtf')
 
   function urlEncodeRfc3986 (s) {
-    return encodeURIComponent(s)
+    return encodeURI(s)
               .replace(/[!'()*]/g, function(c) {
                 return '%' + c.charCodeAt(0).toString(16)
               })
@@ -40,8 +40,87 @@ module.exports = (function booky () {
 
   function tupleToQueryParam (tuple) {
     var key = Object.keys(tuple)[0]
-    return key + '=' + flatten(tuple[key])
+    return (key + '=' + flatten(tuple[key]))
   }
+  /******************************************************************************/
+
+    function Email () {
+      var my = {
+        recipients: [],
+        parameters: {
+          cc:       [],
+          bcc:      [],
+          subject:  [],
+          body:     [],
+        },
+      }
+
+      var INTERFACE = {
+        to:           to,
+        cc:           cc,
+        bcc:          bcc,
+        subject:      subject,
+        body:         body,
+        inNewWindow:  inNewWindow,
+        then:         then,
+        constructUrl: constructUrl
+      }
+
+      function to (r) {
+        my.recipients = my.recipients.concat(r)
+        return INTERFACE
+      }
+
+      function cc (c) {
+        my.parameters.cc = my.parameters.cc.concat(c)
+        return INTERFACE
+      }
+
+      function bcc (b) {
+        my.parameters.bcc = my.parameters.bcc.concat(b)
+        return INTERFACE
+      }
+
+      function subject (s) {
+        my.parameters.subject = my.parameters.subject.concat(s)
+        return INTERFACE
+      }
+
+      function body (b) {
+        my.parameters.body = my.parameters.body.concat(b)
+        return INTERFACE
+      }
+
+      function constructUrl () {
+        var recipients = my.recipients.map(flatten).join(',')
+
+        var parameters = [
+          { cc:       my.parameters.cc.map(flatten).join(',')     },
+          { bcc:      my.parameters.bcc.map(flatten).join(',')    },
+          { subject:  my.parameters.subject.map(flatten).join('') },
+          { body:     my.parameters.body.map(flatten).join('')    },
+        ]
+
+        var queryParameters = parameters.map(tupleToQueryParam).join('&')
+
+        return ('mailto:' +
+                urlEncodeRfc3986(recipients) +
+                ((queryParameters.length > 0) ? '?' : '') +
+                urlEncodeRfc3986(queryParameters))
+      }
+
+      function inNewWindow () {
+        window.open(constructUrl(), Date.now())
+        return INTERFACE
+      }
+
+      function then (f) {
+        f(my) // life...!
+        return INTERFACE
+      }
+
+      return INTERFACE
+    }
 
 
 /******************************************************************************/
@@ -61,6 +140,7 @@ module.exports = (function booky () {
       inNewWindow:  inNewWindow,
       inSameWindow: inSameWindow,
       then:         then,
+      constructUrl: constructUrl
     }
 
     function baseUrl (b) {
@@ -69,12 +149,12 @@ module.exports = (function booky () {
     }
 
     function parameters (p) {
-      my.parameters = (wtf.ARRAY(b)) ? b : [b]
+      my.parameters = (wtf.ARRAY(p)) ? p : [p]
       return INTERFACE
     }
 
     function fragment (f) {
-      my.fragment = f
+      my.fragment = (wtf.ARRAY(f)) ? p : [f]
       return INTERFACE
     }
 
@@ -83,11 +163,11 @@ module.exports = (function booky () {
       var parameters =  my.parameters.map(tupleToQueryParam).join('&')
       var fragment =    my.fragment.map(flatten).join('')
 
-      return urlEncodeRfc3986(baseUrl) +
-              (parameters.length > 0) ? '?' : '' +
+      return (urlEncodeRfc3986(baseUrl) +
+              ((parameters.length > 0) ? '?' : '') +
               urlEncodeRfc3986(parameters) +
-              (fragment.length > 0) ? '?' : '#' +
-              urlEncodeRfc3986(fragment)
+              ((fragment.length > 0) ? '#' : '') +
+              urlEncodeRfc3986(fragment))
     }
 
     function inNewWindow () { window.open(constructUrl(), Date.now()) }
@@ -102,79 +182,7 @@ module.exports = (function booky () {
     return INTERFACE
   }
 
-
 /******************************************************************************/
-
-  function Email () {
-    var my = {
-      recipients: [],
-      parameters: {
-        cc:       [],
-        bcc:      [],
-        subject:  [],
-        body:     [],
-      },
-    }
-
-    var INTERFACE = {
-      to:           to,
-      cc:           cc,
-      bcc:          bcc,
-      subject:      subject,
-      body:         body,
-      inNewWindow:  inNewWindow,
-    }
-
-    function to (r) {
-      my.recipients.concat(r)
-      return INTERFACE
-    }
-
-    function cc (c) {
-      my.parameters.cc.concat(c)
-      return INTERFACE
-    }
-
-    function bcc (b) {
-      my.parameters.bcc.concat(b)
-      return INTERFACE
-    }
-
-    function subject (s) {
-      my.parameters.subject = s
-      return INTERFACE
-    }
-
-    function body (b) {
-      my.parameters.body = b
-      return INTERFACE
-    }
-
-    function constructUrl () {
-      var recipients = my.recipients.map(flatten).join(',')
-
-      var parameters = [
-        { cc:       my.parameters.cc.map(flatten).join(',')     },
-        { bcc:      my.parameters.bcc.map(flatten).join(',')    },
-        { subject:  my.parameters.subject.map(flatten).join('') },
-        { body:     my.parameters.body.map(flatten).join('')    },
-      ]
-
-      var queryParameters = parameters.map(tupleToQueryParam).join('&')
-
-      return 'mailto:' +
-              urlEncodeRfc3986(recipients) +
-              (queryParameters.length > 0) ? '?' : '' +
-              urlEncodeRfc3986(queryParameters)
-    }
-
-    function inNewWindow () {
-      window.open(constructUrl(), Date.now())
-      return INTERFACE
-    }
-
-    return INTERFACE
-  }
 
   /**
    * Gets the author of an HTML document if present.
@@ -184,7 +192,7 @@ module.exports = (function booky () {
     var meta = document.head.getElementsByTagName('meta')
 
     return meta
-            .filter(function  (m) { return m.name.toLowercase() === 'author' })
+            .filter(function (m) { return m.name.toLowercase() === 'author' })
             .map(function (m) { return m.content })
             .join(', ')
   }

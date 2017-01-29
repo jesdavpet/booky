@@ -30,7 +30,8 @@
   "homepage": "https://github.com/jesdavpet/booky#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "webpack": "^1.14.0"
   },
   "dependencies": {
     "@jesdavpet/wtf": "^1.1.0"
