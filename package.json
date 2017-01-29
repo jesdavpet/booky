@@ -1,6 +1,6 @@
 {
   "name": "@jesdavpet/booky",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fluent interface for making custom bookmarklets.",
   "main": "src/booky.js",
   "directories": {
