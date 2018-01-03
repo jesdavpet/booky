@@ -7,6 +7,7 @@
     "test": "test"
   },
   "scripts": {
+    "build": "rimraf -f dist && mkdir dist && uglifyjs ./src/booky.js -o ./dist/booky.min.js -c -m",
     "test": "npm run test-unit",
     "test-unit": "mocha test/**.test.js",
     "test-unit-watch": "mocha test/**.test.js -w"
@@ -31,6 +32,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
+    "uglify-js": "^3.3.4",
     "webpack": "^1.14.0"
   },
   "dependencies": {
